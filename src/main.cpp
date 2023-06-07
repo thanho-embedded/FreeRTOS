@@ -16,6 +16,7 @@ DHT_Unified dht(DTH11_PIN, DHTTYPE);
 const TickType_t xDelay1000ms = pdMS_TO_TICKS(1000);
 
 // put function declarations here:
+TaskHandle_t Task1Handle = NULL, Task2Handle = NULL;
 void Task1(void* pvParameters);
 void Task2(void* pvParameters);
 
@@ -38,14 +39,14 @@ void setup()
   xTaskCreate
   (
     Task1,
-    "LED Blinking", // Name of task
-    1024,            // Stack size 128 bytes
-    NULL,           // Parameters for task (pvParameters)
-    2,              // Priority, 0 is lowest
-    NULL            // Task handle
+    "LED Blinking",         // Name of task
+    1024,                   // Stack size 128 bytes
+    NULL,                   // Parameters for task (pvParameters)
+    2,                      // Priority, 0 is lowest
+    &Task1Handle            // Task handle
   );
   //...Create a task 2
-  xTaskCreate(Task2, "Debug Monitor", 1024, NULL, 2, NULL);
+  xTaskCreate(Task2, "Debug Monitor", 1024, NULL, 2, &Task2Handle);
   vTaskStartScheduler();
 }
 void loop() {}
