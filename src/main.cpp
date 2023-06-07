@@ -21,7 +21,7 @@ void Task1(void* pvParameters);
 void Task2(void* pvParameters);
 
 
-void uTaskBlink(uint8_t pin, uint16_t delay)
+static void uTaskBlink(uint8_t pin, uint16_t delay)
 {
   digitalWrite(pin, false);
   vTaskDelay(pdMS_TO_TICKS(delay));
@@ -47,18 +47,19 @@ void setup()
   Serial.begin(115200);
   while(!Serial);   // wait serial is opened
 
+  BaseType_t xReturned;
   //...Create a task 1
-  xTaskCreate
-  (
-    Task1,
-    "LED Blinking",         // Name of task
-    1024,                   // Stack size 128 bytes
-    NULL,                   // Parameters for task (pvParameters)
-    2,                      // Priority, 0 is lowest
-    &Task1Handle            // Task handle
-  );
+  xReturned = xTaskCreate
+            (
+              Task1,
+              "LED Blinking",         // Name of task
+              1024,                   // Stack sizes * 4
+              NULL,                   // Parameters for task (pvParameters)
+              2,                      // Priority, 0 is lowest
+              &Task1Handle            // Task handle
+            );
   //...Create a task 2
-  xTaskCreate(Task2, "Debug Monitor", 1024, NULL, 2, &Task2Handle);
+  xReturned = xTaskCreate(Task2, "Debug Monitor", 1024, NULL, 2, &Task2Handle);
   vTaskStartScheduler();
 }
 void loop() {}
