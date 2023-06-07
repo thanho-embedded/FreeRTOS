@@ -29,6 +29,18 @@ void uTaskBlink(uint8_t pin, uint16_t delay)
   vTaskDelay(pdMS_TO_TICKS(delay));
 }
 
+void Task1Applications()
+{
+  // Do some applications here
+}
+
+void Task2Applications()
+{
+  // Do some applications here
+}
+
+
+
 void setup() 
 {
   //... Initialize Serial that using for debug
