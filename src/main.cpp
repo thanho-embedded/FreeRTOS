@@ -17,11 +17,11 @@ const TickType_t xDelay1000ms = pdMS_TO_TICKS(1000);
 
 // put function declarations here:
 TaskHandle_t Task1Handle = NULL, Task2Handle = NULL;
-void Task1(void* pvParameters);
-void Task2(void* pvParameters);
+void control_task(void* pvParameters);
+void communication_task(void* pvParameters);
 
 
-static void uTaskBlink(uint8_t pin, uint16_t delay)
+static void blink(uint8_t pin, uint16_t delay)
 {
   digitalWrite(pin, false);
   vTaskDelay(pdMS_TO_TICKS(delay));
@@ -29,12 +29,12 @@ static void uTaskBlink(uint8_t pin, uint16_t delay)
   vTaskDelay(pdMS_TO_TICKS(delay));
 }
 
-void Task1Applications()
+void signal_event()
 {
   // Do some applications here
 }
 
-void Task2Applications()
+void wait_event()
 {
   // Do some applications here
 }
@@ -51,7 +51,7 @@ void setup()
   //...Create a task 1
   xReturned = xTaskCreate
             (
-              Task1,
+              control_task,
               "LED Blinking",         // Name of task
               1024,                   // Stack sizes * 4
               NULL,                   // Parameters for task (pvParameters)
@@ -59,7 +59,7 @@ void setup()
               &Task1Handle            // Task handle
             );
   //...Create a task 2
-  xReturned = xTaskCreate(Task2, "Debug Monitor", 1024, NULL, 2, &Task2Handle);
+  xReturned = xTaskCreate(communication_task, "Debug Monitor", 1024, NULL, 2, &Task2Handle);
   vTaskStartScheduler();
 }
 void loop() {}
@@ -71,7 +71,7 @@ void loop() {}
 
 /// @brief Taks 1, Led blinking
 /// @param pvParameters 
-void Task1(void *pvParameters __attribute__((unused)))
+void control_task(void *pvParameters __attribute__((unused)))
 {
   // Inittialze
   pinMode(LED1_PIN, OUTPUT);
@@ -81,13 +81,13 @@ void Task1(void *pvParameters __attribute__((unused)))
   while(true)
   {
     Serial.println("Task 1 is running");
-    uTaskBlink(LED1_PIN, 500);
+    blink(LED1_PIN, 500);
   }
 }
 
 /// @brief Task 2, Serial debug
 /// @param pvParameters 
-void Task2(void *pvParameters __attribute__((unused)))
+void communication_task(void *pvParameters __attribute__((unused)))
 {
   uint32_t delayMS;
   // Initialize
@@ -142,10 +142,10 @@ void Task2(void *pvParameters __attribute__((unused)))
       Serial.println(F("°C"));
 
       if (event.temperature > 30) {
-        uTaskBlink(LED2_PIN, 100);
+        blink(LED2_PIN, 100);
       }
       else {
-        uTaskBlink(LED2_PIN, 1000);
+        blink(LED2_PIN, 1000);
       }
     }
     // Get humidity event and print its value.
